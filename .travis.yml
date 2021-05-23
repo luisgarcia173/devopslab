@@ -1,3 +1,9 @@
+# Versao OS
+os: linux
+
+# Distribution
+dist: bionic
+
 # Linguagem Utilizada para Desenvolver a Aplicação
 language: python
 
@@ -19,5 +25,6 @@ deploy:
   api_key: $HEROKU_API_KEY
   edge: true 
   app: devopslab-luisgarcia173
+  strategy: git
   on:
       branch: main
