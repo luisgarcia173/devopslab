@@ -33,6 +33,6 @@ deploy:
       branch: main
   - provider: gae
     keyfile: ../lab-devops-cloud-314819-71ba6aedd9d8.json
-    project: devopslab-luisgarcia173
+    project: lab-devops-cloud-314819
     on:
       branch: main
