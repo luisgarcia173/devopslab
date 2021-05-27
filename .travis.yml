@@ -11,6 +11,7 @@ language: python
 python:
   - "3.7.9"
 
+# Comando para descriptografar chave
 before_install:
   - openssl aes-256-cbc -K $encrypted_f852357611c5_key -iv $encrypted_f852357611c5_iv -in lab-devops-cloud-314819-71ba6aedd9d8.json.enc -out ../lab-devops-cloud-314819-71ba6aedd9d8.json -d 
 
@@ -22,17 +23,46 @@ install:
 script:
   - python -m unittest -v test || travis_terminate 1;
 
-# Definir o Deploy no Heroku
-deploy:
-  - provider: heroku
-    api_key: $HEROKU_API_KEY
-    edge: true 
-    app: devopslab-luisgarcia173
-    strategy: git
-    on:
-      branch: main
-  - provider: gae
-    keyfile: ../lab-devops-cloud-314819-71ba6aedd9d8.json
-    project: lab-devops-cloud-314819
-    on:
-      branch: main
+
+# Definindo Stages Travis
+jobs:
+  include:
+    - stage: "Build"
+      name: "Prepare to build Python App"
+      install:
+        - pip install flask
+      script:
+        - python -m unittest -v test || travis_terminate 1;
+
+    - stage: "STG Deploy"
+      name: "Staging Application Deployment"
+      script: skip
+      deploy:
+        provider: heroku
+        api_key: $HEROKU_API_KEY
+        edge: true
+        app: devopslab-luisgarcia173
+        strategy: git
+        on:
+          branch: main
+
+    - stage: "STG Test"
+      name: "Staging Application Test"
+      script:
+        - curl https://devopslab-luisgarcia173.herokuapp.com/ | grep "Hello World" || travis_terminate 1;
+
+    - stage: "PROD Deploy"
+      name: "Production Application Deployment"
+      script: skip
+      deploy:
+        provider: gae
+        keyfile: ../lab-devops-cloud-314819-71ba6aedd9d8.json
+        project: lab-devops-cloud-314819
+        on:
+          branch: main
+
+    - stage: "PROD Test"
+      name: "Staging Application Test"
+      script:
+        - curl https://lab-devops-cloud-314819.uc.r.appspot.com/ | grep "Hello World" || travis_terminate 1;
+
